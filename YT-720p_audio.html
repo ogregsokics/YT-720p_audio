@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube URL Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #output {
+            width: 100%;
+            height: 200px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>YT-720p_audio</h1>
+    <label for="url-input">Paste YouTube URLs (one after another, no separators needed):</label>
+    <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1https://www.youtube.com/watch?v=example2https://www.youtube.com/watch?v=example3"></textarea>
+    <button id="generate-button">Generate Commands</button>
+    <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
+    <button id="copy-button">Copy to Clipboard</button>
+
+    <script>
+        document.getElementById('generate-button').addEventListener('click', () => {
+            const input = document.getElementById('url-input').value;
+            const output = document.getElementById('output');
+
+            // Match YouTube URLs from the input
+            const urlRegex = /https?:\/\/www\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/g;
+            const urls = input.match(urlRegex) || [];
+            let commands = '';
+
+            urls.forEach(url => {
+                commands += `yt-dlp -f 136 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+            });
+
+            output.value = commands.trim() + '\n';
+        });
+
+        document.getElementById('copy-button').addEventListener('click', () => {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+        });
+    </script>
+</body>
+</html>
