@@ -28,8 +28,8 @@
 </head>
 <body>
     <h1>YT-720p_audio</h1>
-    <label for="url-input">Paste YouTube URLs (one after another, no separators needed):</label>
-    <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1https://www.youtube.com/watch?v=example2https://www.youtube.com/watch?v=example3"></textarea>
+    <label for="url-input">Paste YouTube URLs (one per line or separated by spaces):</label>
+    <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://www.youtube.com/watch?v=example2"></textarea>
     <button id="generate-button">Generate Commands</button>
     <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
     <button id="copy-button">Copy to Clipboard</button>
@@ -39,9 +39,8 @@
             const input = document.getElementById('url-input').value;
             const output = document.getElementById('output');
 
-            // Match YouTube URLs from the input
-            const urlRegex = /https?:\/\/www\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]+/g;
-            const urls = input.match(urlRegex) || [];
+            // Split input by whitespace and filter valid YouTube URLs
+            const urls = input.split(/\s+/).filter(url => url.startsWith('https://www.youtube.com/watch?v='));
             let commands = '';
 
             urls.forEach(url => {
