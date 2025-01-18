@@ -18,6 +18,7 @@
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            margin-right: 10px;
         }
         #output {
             width: 100%;
@@ -31,6 +32,7 @@
     <label for="url-input">Paste YouTube URLs (one per line or separated by spaces):</label>
     <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://www.youtube.com/watch?v=example2"></textarea>
     <button id="generate-button">Generate Commands</button>
+    <button id="new-line-button">Add New Line</button>
     <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
     <button id="copy-button">Copy to Clipboard</button>
 
@@ -56,6 +58,12 @@
             const output = document.getElementById('output');
             output.select();
             document.execCommand('copy');
+        });
+
+        document.getElementById('new-line-button').addEventListener('click', () => {
+            const inputField = document.getElementById('url-input');
+            inputField.value += '\n';
+            inputField.focus();
         });
     </script>
 </body>
