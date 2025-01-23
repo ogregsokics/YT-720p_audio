@@ -65,6 +65,14 @@
             inputField.value += '\n';
             inputField.focus();
         });
+
+        document.getElementById('url-input').addEventListener('mousedown', (event) => {
+            event.preventDefault(); // Prevent default cursor placement
+            const inputField = event.target;
+            const length = inputField.value.length;
+            inputField.focus();
+            inputField.setSelectionRange(length, length);
+        });
     </script>
 </body>
 </html>
