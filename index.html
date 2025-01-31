@@ -30,7 +30,7 @@
 <body>
     <h1>YT-720p_audio</h1>
     <label for="url-input">Paste YouTube URLs (one per line or separated by spaces):</label>
-    <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://www.youtube.com/watch?v=example2"></textarea>
+    <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://youtu.be/example2"></textarea>
     <button id="generate-button">Generate Commands</button>
     <button id="new-line-button">Add New Line</button>
     <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
@@ -42,7 +42,10 @@
             const output = document.getElementById('output');
 
             // Split input by whitespace and filter valid YouTube URLs
-            const urls = input.split(/\s+/).filter(url => url.startsWith('https://www.youtube.com/watch?v='));
+            const urls = input.split(/\s+/).filter(url => 
+                url.startsWith('https://www.youtube.com/watch?v=') || 
+                url.startsWith('https://youtu.be/')
+            );
             let commands = '';
 
             urls.forEach(url => {
