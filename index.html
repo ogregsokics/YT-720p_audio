@@ -32,16 +32,15 @@
     <label for="url-input">Paste YouTube URLs (one per line or separated by spaces):</label>
     <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://youtu.be/example2"></textarea>
     <button id="generate-button">Generate Commands</button>
+    <button id="generate-140-button">Generate 140 Only</button>
     <button id="new-line-button">Add New Line</button>
     <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
     <button id="copy-button">Copy to Clipboard</button>
 
     <script>
-        document.getElementById('generate-button').addEventListener('click', () => {
+        function generateCommands(include140Only = false) {
             const input = document.getElementById('url-input').value;
             const output = document.getElementById('output');
-
-            // Split input by whitespace and filter valid YouTube URLs
             const urls = input.split(/\s+/).filter(url => 
                 url.startsWith('https://www.youtube.com/watch?v=') || 
                 url.startsWith('https://youtu.be/')
@@ -49,32 +48,27 @@
             let commands = '';
 
             urls.forEach(url => {
-                commands += `yt-dlp -f 136 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
-                commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                if (!include140Only) {
+                    commands += `yt-dlp -f 136 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                    commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                }
                 commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
             });
 
             output.value = commands.trim() + '\n';
-        });
+        }
 
+        document.getElementById('generate-button').addEventListener('click', () => generateCommands(false));
+        document.getElementById('generate-140-button').addEventListener('click', () => generateCommands(true));
         document.getElementById('copy-button').addEventListener('click', () => {
             const output = document.getElementById('output');
             output.select();
             document.execCommand('copy');
         });
-
         document.getElementById('new-line-button').addEventListener('click', () => {
             const inputField = document.getElementById('url-input');
             inputField.value += '\n';
             inputField.focus();
-        });
-
-        document.getElementById('url-input').addEventListener('mousedown', (event) => {
-            event.preventDefault(); // Prevent default cursor placement
-            const inputField = event.target;
-            const length = inputField.value.length;
-            inputField.focus();
-            inputField.setSelectionRange(length, length);
         });
     </script>
 </body>
