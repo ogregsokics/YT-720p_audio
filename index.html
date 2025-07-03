@@ -50,7 +50,7 @@
             urls.forEach(url => {
                 if (!include140Only) {
                     commands += `yt-dlp -f 136 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
-                    commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                    // commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
                 }
                 commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
             });
