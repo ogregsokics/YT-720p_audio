@@ -19,6 +19,7 @@
             font-size: 16px;
             cursor: pointer;
             margin-right: 10px;
+            margin-top: 5px;
         }
         #output {
             width: 100%;
@@ -31,14 +32,16 @@
     <h1>YT-720p_audio</h1>
     <label for="url-input">Paste YouTube URLs (one per line or separated by spaces):</label>
     <textarea id="url-input" placeholder="https://www.youtube.com/watch?v=example1\nhttps://youtu.be/example2"></textarea>
+    <br>
     <button id="generate-button">Generate Commands</button>
     <button id="generate-140-button">Generate 140 Only</button>
+    <button id="generate-18-button">Generate 18 Only</button>
     <button id="new-line-button">Add New Line</button>
     <textarea id="output" readonly placeholder="Generated commands will appear here..."></textarea>
     <button id="copy-button">Copy to Clipboard</button>
 
     <script>
-        function generateCommands(include140Only = false) {
+        function generateCommands(mode = "default") {
             const input = document.getElementById('url-input').value;
             const output = document.getElementById('output');
             const urls = input.split(/\s+/).filter(url => 
@@ -48,23 +51,27 @@
             let commands = '';
 
             urls.forEach(url => {
-                if (!include140Only) {
+                if (mode === "default") {
                     commands += `yt-dlp -f 136 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
-                    // commands += `yt-dlp -f 298 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
+                    commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+                } else if (mode === "140") {
+                    commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+                } else if (mode === "18") {
+                    commands += `yt-dlp -f 18 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
                 }
-                commands += `yt-dlp -f 140 --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
             });
 
             output.value = commands.trim() + '\n';
         }
 
-        document.getElementById('generate-button').addEventListener('click', () => generateCommands(false));
-        document.getElementById('generate-140-button').addEventListener('click', () => generateCommands(true));
+        document.getElementById('generate-button').addEventListener('click', () => generateCommands("default"));
+        document.getElementById('generate-140-button').addEventListener('click', () => generateCommands("140"));
+        document.getElementById('generate-18-button').addEventListener('click', () => generateCommands("18"));
         document.getElementById('copy-button').addEventListener('click', () => {
             const output = document.getElementById('output');
             output.select();
             document.execCommand('copy');
-            window.location.reload(); // Oldal újratöltése másolás után
+            window.location.reload();
         });
         document.getElementById('new-line-button').addEventListener('click', () => {
             const inputField = document.getElementById('url-input');
@@ -73,7 +80,7 @@
         });
 
         document.getElementById('url-input').addEventListener('mousedown', (event) => {
-            event.preventDefault(); // Prevent default cursor placement
+            event.preventDefault();
             const inputField = event.target;
             const length = inputField.value.length;
             inputField.focus();
