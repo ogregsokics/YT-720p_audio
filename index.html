@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YT-720p_audio</title>
+<title>YT + FB + IG downloader</title>
 
 <style>
 body{
@@ -35,15 +35,16 @@ button{
 
 <body>
 
-<h1>YT-720p_audio</h1>
+<h1>YT + FB + IG yt-dlp generator</h1>
 
 <label for="url-input">
-Paste YouTube URLs (one per line or separated by spaces):
+Paste YouTube / Facebook / Instagram URLs:
 </label>
 
 <textarea id="url-input"
-placeholder="https://www.youtube.com/watch?v=example1
-https://youtu.be/example2"></textarea>
+placeholder="https://www.youtube.com/watch?v=example
+https://fb.watch/example
+https://www.instagram.com/reels/example"></textarea>
 
 <br>
 
@@ -51,6 +52,10 @@ https://youtu.be/example2"></textarea>
 <button id="generate-18-button">360p Only</button>
 <button id="generate-720p-button">best 720p + best audio</button>
 <button id="generate-1080p-button">best 1080p + desc + best audio</button>
+
+<!-- ÚJ GOMB -->
+<button id="generate-social-button">FB / IG download</button>
+
 <button id="append-subs-button">Add HU subtitles</button>
 <button id="append-360p-button">Add 360p to Existing Output</button>
 <button id="new-line-button">Add New Line</button>
@@ -62,13 +67,23 @@ placeholder="Generated commands will appear here..."></textarea>
 
 <script>
 
+// 🔥 BŐVÍTETT URL FELISMERÉS
 function extractUrlsFromInput(){
     const input=document.getElementById('url-input').value;
 
     return input.split(/\s+/).filter(url =>
-        url.match(/^https:\/\/www\.youtube\.com\/watch\?v=/) ||
+        url.match(/^https:\/\/(www\.)?youtube\.com\/watch\?v=/) ||
         url.match(/^https:\/\/youtu\.be\//) ||
-        url.match(/^https:\/\/(www\.)?youtube\.com\/live\//)
+        url.match(/^https:\/\/(www\.)?youtube\.com\/live\//) ||
+
+        // FACEBOOK
+        url.match(/^https:\/\/(www\.)?facebook\.com\//) ||
+        url.match(/^https:\/\/fb\.watch\//) ||
+
+        // INSTAGRAM
+        url.match(/^https:\/\/(www\.)?instagram\.com\/reels\//) ||
+        url.match(/^https:\/\/(www\.)?instagram\.com\/p\//) ||
+        url.match(/^https:\/\/(www\.)?instagram\.com\/tv\//)
     );
 }
 
@@ -90,35 +105,43 @@ function generateCommands(mode="default"){
 
         if(mode==="best720p"){
 
-            commands+=`yt-dlp -f bestvideo[height=720][ext=mp4] --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n`;
-            commands+=`yt-dlp -f bestaudio[ext=m4a] --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+            commands+=`yt-dlp -f bestvideo[height=720][ext=mp4] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n`;
+            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
         else if(mode==="140"){
 
-            commands+=`yt-dlp -f bestaudio[ext=m4a] --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
         else if(mode==="360p"){
 
-            commands+=`yt-dlp -f best[height=360] --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+            commands+=`yt-dlp -f best[height=360] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
         else if(mode==="best1080p"){
 
-            commands+=`yt-dlp -f bestvideo[height=1080][ext=mp4] --output "~/Downloads/%(title)s.%(ext)s" --write-description -i ${url}\n\n`;
-            commands+=`yt-dlp -f bestaudio[ext=m4a] --output "~/Downloads/%(title)s.%(ext)s" -i ${url}\n\n`;
+            commands+=`yt-dlp -f bestvideo[height=1080] -o "~/Downloads/%(title)s.%(ext)s" --write-description ${url}\n`;
+            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
+
+        // 🔥 ÚJ: FACEBOOK + INSTAGRAM
+        else if(mode==="social"){
+
+    commands+=`yt-dlp -f best -o "~/Downloads/%(uploader)s - %(title|description|id)s.%(ext)s" ${url}\n\n`;
+
+}
 
     });
 
     output.value=commands.trim()+'\n';
 }
 
+// BUTTON EVENTS
 document.getElementById('generate-720p-button')
 .addEventListener('click',()=>generateCommands("best720p"));
 
@@ -130,6 +153,10 @@ document.getElementById('generate-18-button')
 
 document.getElementById('generate-1080p-button')
 .addEventListener('click',()=>generateCommands("best1080p"));
+
+// 🔥 ÚJ GOMB ESEMÉNY
+document.getElementById('generate-social-button')
+.addEventListener('click',()=>generateCommands("social"));
 
 document.getElementById('append-subs-button').addEventListener('click',()=>{
 
@@ -144,7 +171,7 @@ document.getElementById('append-subs-button').addEventListener('click',()=>{
     let extra="\n# Added HU subtitles:\n\n";
 
     urls.forEach(url=>{
-        extra+=`yt-dlp --write-auto-subs --sub-lang hu --convert-subs srt --skip-download -o "/home/gerissd/Downloads/%(title)s.%(ext)s" ${url}\n`;
+        extra+=`yt-dlp --write-auto-subs --sub-lang hu --convert-subs srt --skip-download -o "~/Downloads/%(title)s.%(ext)s" ${url}\n`;
     });
 
     output.value+=extra+"\n";
@@ -164,7 +191,7 @@ document.getElementById('append-360p-button').addEventListener('click',()=>{
     let extra="\n# Added 360p downloads:\n\n";
 
     urls.forEach(url=>{
-        extra+=`yt-dlp -f best[height=360] --output "~/Downloads/360p%(title)s.%(ext)s" -i ${url}\n`;
+        extra+=`yt-dlp -f best[height=360] -o "~/Downloads/360p_%(title)s.%(ext)s" ${url}\n`;
     });
 
     output.value=existingText+extra+"\n";
