@@ -106,13 +106,13 @@ function generateCommands(mode="default"){
         if(mode==="best720p"){
 
             commands+=`yt-dlp -f bestvideo[height=720][ext=mp4] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n`;
-            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
+            commands+=`yt-dlp -f bestaudio[ext=m4a] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
         else if(mode==="140"){
 
-            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
+            commands+=`yt-dlp -f bestaudio[ext=m4a] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
