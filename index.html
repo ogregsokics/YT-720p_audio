@@ -125,7 +125,7 @@ function generateCommands(mode="default"){
         else if(mode==="best1080p"){
 
             commands+=`yt-dlp -f bestvideo[height=1080] -o "~/Downloads/%(title)s.%(ext)s" --write-description ${url}\n`;
-            commands+=`yt-dlp -f bestaudio -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
+            commands+=`yt-dlp -f bestaudio[ext=m4a] -o "~/Downloads/%(title)s.%(ext)s" ${url}\n\n`;
 
         }
 
