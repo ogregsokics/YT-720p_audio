@@ -132,7 +132,7 @@ function generateCommands(mode="default"){
         // 🔥 ÚJ: FACEBOOK + INSTAGRAM
         else if(mode==="social"){
 
-    commands+=`yt-dlp -f best -o "~/Downloads/%(uploader)s - %(title|description|id)s.%(ext)s" ${url}\n\n`;
+    commands+=`yt-dlp -f best -o "~/Downloads/%(uploader)s - %(id)s.%(ext)s" ${url}\n\n`;
 
 }
 
