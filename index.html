@@ -193,6 +193,7 @@ document.getElementById('append-360p-button').addEventListener('click',()=>{
 
     urls.forEach(url=>{
         extra+=`yt-dlp -f bestvideo[height=360][ext=mp4][protocol=https] -o "~/Downloads/360p_%(title)s.%(ext)s" ${url}\n`;
+        extra+=`yt-dlp -f bestaudio[ext=m4a] -o "~/Downloads/360_%(title)s.%(ext)s" ${url}\n\n`;
     });
 
     output.value=existingText+extra+"\n";
